@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../../models/userModel");
 const nodemailer = require("nodemailer");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 
 // Transporter for nodemailer
 const transporter = nodemailer.createTransport({
