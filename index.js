@@ -41,6 +41,12 @@ app.use(cors({
   credentials: true,
     exposedHeaders: ['set-cookie'] 
 }));
+app.use(cors({
+  origin: [
+    "https://amitshop21.vercel.app/"
+  ],
+  credentials: true
+}));
 
 // Body parsers
 app.use(express.json({ limit: "50mb" }));
