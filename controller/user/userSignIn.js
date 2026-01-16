@@ -36,9 +36,10 @@ async function userSignInController(req,res){
         // }
         const tokenOption = {
             httpOnly: true,
-            secure: false,              // ❗ Set to true only if using HTTPS
-            sameSite: "Lax",            // Good for same-origin requests
+            secure: true,              // ❗ Set to true only if using HTTPS
+            sameSite: "none",            // Good for same-origin requests
             maxAge: 1000 * 60 * 60 * 8, // 8 hours
+              path: '/',
           };
 
         res.cookie("token",token,tokenOption).status(200).json({

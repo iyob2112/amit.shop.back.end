@@ -38,7 +38,8 @@ app.use(cors({
     }
     return callback(null, true);
   },
-  credentials: true
+  credentials: true,
+    exposedHeaders: ['set-cookie'] 
 }));
 
 // Body parsers
@@ -58,3 +59,9 @@ connectDB().then(() => {
     console.log("Server is running on port " + PORT);
   });
 });
+
+
+app.options('*', cors({
+  origin: true,
+  credentials: true
+}));
