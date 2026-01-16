@@ -311,6 +311,43 @@ const authToken = async (req, res, next) => {
     });
   }
 };
-
-module.exports = authToken;
-
+const restrictTo = (...roles) => {
+  return async (req, res, next) => {
+    try {
+      if (!req.userId) {
+        return res.status(401).json({
+          message: "Please login first",
+          error: true,
+          success: false,
+        });
+      }
+      
+      const user = await User.findById(req.userId);
+      if (!user) {
+        return res.status(401).json({
+          message: "User not found",
+          error: true,
+          success: false,
+        });
+      }
+      
+      if (!roles.includes(user.role)) {
+        return res.status(403).json({
+          message: "Access denied. Insufficient permissions.",
+          error: true,
+          success: false,
+        });
+      }
+      
+      req.user = user; // Attach full user object if needed
+      next();
+    } catch (error) {
+      return res.status(500).json({
+        message: error.message,
+        error: true,
+        success: false,
+      });
+    }
+  };
+};
+module.exports = { authToken, restrictTo };
