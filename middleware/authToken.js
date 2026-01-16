@@ -1,60 +1,53 @@
 const jwt = require('jsonwebtoken');
-// authToken middleware - Accept both cookies AND Authorization header
+
 async function authToken(req, res, next) {
-  try {
-    let token;
-    const isMobile = req.headers['user-agent']?.match(/iPhone|iPad|iPod|Android/i);
+    try {
+        // const token = req.cookies?.token;
+          let token;
 
-    // 1. First check Authorization header (mobile fallback)
-    if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
+    // Read token from HEADER or COOKIE
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith("Bearer")
+    ) {
       token = req.headers.authorization.split(" ")[1];
-      console.log("Token from Authorization header");
-    }
-    // 2. Then check cookies (desktop)
-    else if (req.cookies?.token) {
+    } else if (req.cookies?.token) {
       token = req.cookies.token;
-      console.log("Token from cookie");
-    }
-    // 3. Check query parameter (additional mobile fallback)
-    else if (req.query.token && isMobile) {
-      token = req.query.token;
-      console.log("Token from query param");
     }
 
-    console.log("Token received:", token ? "YES" : "NO");
-    
-    if (!token) {
-      return res.status(401).json({
-        message: "Please login first",
-        error: true,
-        success: false
-      });
-    }
+        console.log("Token received:", token);
+        if (!token) {
+            return res.status(401).json({
+                message: "Please Login...!",
+                error: true,
+                success: false
+            });
+        }
 
-    // Verify token
-    const decoded = jwt.verify(token, process.env.TOKEN_SECRET_KEY);
-    const user = await User.findById(decoded._id);
-    
-    if (!user) {
-      return res.status(401).json({
-        message: "User not found",
-        error: true,
-        success: false
-      });
-    }
+        jwt.verify(token, process.env.TOKEN_SECRET_KEY, (err, decoded) => {
+            if (err) {
+                console.error("JWT Verification Error:", err);
+                return res.status(401).json({
+                    message: "Invalid or Expired Token",
+                    error: true,
+                    success: false
+                });
+            }
 
-    req.userId = user._id;
-    req.user = user;
-    next();
-    
-  } catch (err) {
-    console.error("Auth error:", err.message);
-    return res.status(401).json({
-      message: "Invalid or expired token",
-      error: true,
-      success: false
-    });
-  }
+            console.log("Decoded Token Data:", decoded);
+            req.userId = decoded._id || decoded.id;//yoooooooooo
+
+            next();
+        });
+
+    } catch (err) {
+        console.error("Auth Middleware Error:", err);
+        res.status(500).json({
+            message: "Internal Server Error",
+            error: true,
+            success: false
+        });
+    }
 }
 
 module.exports = authToken;
