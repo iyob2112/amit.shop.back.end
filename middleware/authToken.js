@@ -2,7 +2,18 @@ const jwt = require('jsonwebtoken');
 
 async function authToken(req, res, next) {
     try {
-        const token = req.cookies?.token;
+        // const token = req.cookies?.token;
+          let token;
+
+    // Read token from HEADER or COOKIE
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith("Bearer")
+    ) {
+      token = req.headers.authorization.split(" ")[1];
+    } else if (req.cookies?.token) {
+      token = req.cookies.token;
+    }
 
         console.log("Token received:", token);
         if (!token) {
