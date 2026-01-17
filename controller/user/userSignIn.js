@@ -42,13 +42,21 @@ async function userSignInController(req,res){
               path: '/',
           };
 
-        res.cookie("token",token,tokenOption).status(200).json({
-            message : "Login successfully",
-            data : token,
-            success : true,
-            error : false
-        })
-
+        // res.cookie("token",token,tokenOption).status(200).json({
+        //     message : "Login successfully",
+        //     data : token,
+        //     success : true,
+        //     error : false
+        // })
+res.status(200).json({
+  success: true,
+  token,
+  user: {
+    id: user._id,
+    name: user.name,
+    email: user.email
+  }
+});
        }else{
          throw new Error("Please check Password")
        }

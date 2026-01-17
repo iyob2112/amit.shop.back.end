@@ -1,6 +1,8 @@
  async function userLogout(req,res){
     try{
         res.clearCookie("token")
+localStorage.removeItem("token");
+navigate("/login");
 
         res.json({
             message : "Logged out successfully",
